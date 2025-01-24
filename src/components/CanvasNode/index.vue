@@ -23,14 +23,13 @@
     class="node"
   >
     <div class="node-name">{{ node.label }}</div>
-    <div v-html="markedText" class="node-text"></div>
+    <div v-html="'<h1>coucou</h1>'" class="node-text"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { PropType, computed } from 'vue'
 import { Colors, INode } from '../../lib/types'
-import { renderedMarkdown } from '../../lib/markdown'
 
 const props = defineProps({
   node: {
@@ -51,9 +50,6 @@ const props = defineProps({
   },
 })
 
-const markedText = computed(() => {
-  return renderedMarkdown(props.node.text ?? '')
-})
 </script>
 
 <style scoped>

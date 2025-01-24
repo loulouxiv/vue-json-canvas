@@ -6,7 +6,7 @@
       '--pan-y': `${panOffsetY}px`,
       cursor: `${isPanning ? 'grabbing' : ''}`,
     }"
-    :class="`wrapper ${isSpacePressed ? 'will-pan' : ''}`"
+    :class="`wrapper`"
   >
     <div id="container">
       <div id="canvas-container">
@@ -37,22 +37,7 @@
           </template>
         </div>
 
-        <div id="output" :class="`theme-dark ${isShowOutput ? '' : 'hidden'}`">
-          <div class="code-header">
-            <span class="language">JSON&nbsp;Canvas</span>
-            <span class="close-output" @click="handleCloseOutput">×</span>
-          </div>
-          <div id="output-code">
-            <pre><code class="language-json" id="positionsOutput"></code></pre>
-          </div>
-          <div class="code-footer">
-            <button class="button-copy">Copy code</button>
-            <button class="button-download">Download file</button>
-          </div>
-        </div>
-
         <div id="controls">
-          <button @click="handleToggleOutput">Toggle output</button>
           <button @click="handleZoomOut">Zoom out</button>
           <button @click="handleZoomIn">Zoom in</button>
           <button @click="handleZoomReset">Reset</button>
@@ -94,8 +79,6 @@ const panOffsetY = ref(0)
 
 const canvasContent = ref<ICanvasContent>(props.canvasContent)
 
-const isShowOutput = ref(false)
-const isSpacePressed = ref(false)
 const isPanning = ref(false)
 const isDragging = ref(false)
 
@@ -107,15 +90,13 @@ onMounted(() => {
   window.addEventListener(
     'wheel',
     (e) => {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.deltaY > 0) {
-          scale.value = Math.max(scale.value - ZOOM_SPEED, MIN_SCALE)
-        } else {
-          scale.value = Math.min(scale.value + ZOOM_SPEED, MAX_SCALE)
-        }
-
-        e.preventDefault()
+      if (e.deltaY > 0) {
+        scale.value = Math.max(scale.value - ZOOM_SPEED, MIN_SCALE)
+      } else {
+        scale.value = Math.min(scale.value + ZOOM_SPEED, MAX_SCALE)
       }
+
+      e.preventDefault()
     },
     { passive: false }
   )
@@ -123,7 +104,6 @@ onMounted(() => {
   // ===== Drag nodes ======
   document.querySelectorAll('.node .node-name').forEach((nodeName) => {
     nodeName.addEventListener('mousedown', function (e) {
-      if (isSpacePressed.value) return
 
       const event = e as MouseEvent
 
@@ -169,21 +149,9 @@ onMounted(() => {
   // ===== Drag nodes ======
 
   // ===== Panning ======
-  window.addEventListener('keydown', function (e) {
-    if (e.code === 'Space') {
-      e.preventDefault()
-      isSpacePressed.value = true
-    }
-  })
-
-  window.addEventListener('keyup', function (e) {
-    if (e.code === 'Space') {
-      isSpacePressed.value = false
-    }
-  })
 
   window.addEventListener('mousedown', function (e) {
-    if (isSpacePressed.value && !isDragging.value) {
+    if (!isDragging.value) {
       isPanning.value = true
       panStartX = e.clientX - panOffsetX.value
       panStartY = e.clientY - panOffsetY.value
@@ -410,13 +378,5 @@ function handleZoomOut() {
 
 function handleZoomReset() {
   adjustCanvasToViewport()
-}
-
-function handleToggleOutput() {
-  isShowOutput.value = !isShowOutput.value
-}
-
-function handleCloseOutput() {
-  isShowOutput.value = false
 }
 </script>
